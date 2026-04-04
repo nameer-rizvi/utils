@@ -1,4 +1,4 @@
-// Non-secure JWT-style payload encoder/decoder. Not a real JWT implementation.
+// NOTE: Non-secure JWT-style payload encoder/decoder. Not a real JWT implementation.
 
 /**
  * Encodes a value into a base64url string.
