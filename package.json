@@ -1,17 +1,17 @@
 {
-  "name": "@nameer-rizvi/typescript-package",
+  "name": "@nameer-rizvi/utils",
   "packageManager": "yarn@4.13.0",
   "version": "0.1.0",
-  "description": "Template for developing NPM packages written in TypeScript.",
+  "description": "Library of utility functions for use in personal projects.",
   "author": "Nameer Rizvi (https://github.com/nameer-rizvi)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nameer-rizvi/typescript-package.git"
+    "url": "git+https://github.com/nameer-rizvi/utils.git"
   },
-  "homepage": "https://github.com/nameer-rizvi/typescript-package#readme",
+  "homepage": "https://github.com/nameer-rizvi/utils#readme",
   "bugs": {
-    "url": "https://github.com/nameer-rizvi/typescript-package/issues"
+    "url": "https://github.com/nameer-rizvi/utils/issues"
   },
   "keywords": [
     "typescript",
