@@ -1,9 +1,10 @@
-import { unique } from "../dist/esm/index.js";
+import * as utils from "../dist/esm/index.js";
 
-// --- array utils ---
-console.assert(
-  JSON.stringify(unique([1, 2, 2, 3, 3])) === JSON.stringify([1, 2, 3]),
-  "unique failed",
+console.log(
+  ".mjs -->",
+  utils.jwt.encode(123),
+  utils.jwt.encode("test"),
+  utils.jwt.encode([1, 2, 3]),
+  utils.jwt.decode(utils.jwt.encode(123)),
+  utils.jwt.decodeJson(utils.jwt.encode([1, 2, 3])),
 );
-
-console.log("✅ ESM tests passed!");

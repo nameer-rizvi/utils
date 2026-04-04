@@ -19,13 +19,13 @@ This package supports both CommonJS and ES Modules out of the box.
 **ESM**
 
 ```js
-import * as pkg from "@nameer-rizvi/utils";
+import * as utils from "@nameer-rizvi/utils";
 ```
 
 **CommonJS**
 
 ```js
-const pkg = require("@nameer-rizvi/utils");
+const utils = require("@nameer-rizvi/utils");
 ```
 
 ## For Template Users
