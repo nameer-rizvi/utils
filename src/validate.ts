@@ -1,10 +1,6 @@
 import safeR from "safe-regex";
 import * as jwt from "./jwt.js";
 
-/*
- * Array Validations
- */
-
 /** Returns `true` if the input is an array. */
 export const isArray = Array.isArray;
 
@@ -30,10 +26,6 @@ export function isArrayOrString(test: unknown): test is unknown[] | string {
   return isArray(test) || isString(test);
 }
 
-/*
- * Base64 Validation
- */
-
 /**
  * Returns `true` if the input is a valid base64 or base64url encoded string.
  * Whitespace is ignored. Empty or whitespace-only strings are considered invalid.
@@ -48,10 +40,6 @@ export function isBase64(test: unknown): test is string {
   if (!isStringNonEmpty(test)) return false;
   return /^[A-Za-z0-9+/\-_]*={0,2}$/.test(test.trim());
 }
-
-/*
- * Boolean Validations
- */
 
 /** Returns `true` if the input is a boolean. */
 export function isBoolean(test: unknown): test is boolean {
@@ -97,10 +85,6 @@ export function isBooleanAny(
   return isBoolean(test) || isBooleanNumber(test) || isBooleanString(test);
 }
 
-/*
- * Credit Card Number Validation (Luhn)
- */
-
 /**
  * Returns `true` if the input is a valid credit card number using the Luhn algorithm.
  * Non-digit characters (e.g. spaces, dashes) are stripped before validation,
@@ -130,10 +114,6 @@ export function isCreditCardNumber(test: unknown): test is string {
   return sum % 10 === 0;
 }
 
-/*
- * Date Validation
- */
-
 /**
  * Returns `true` if the input is a valid date — accepts `Date` objects, date strings, and timestamps.
  * Invalid `Date` objects (e.g. `new Date("invalid")`) and `NaN` timestamps are rejected.
@@ -152,10 +132,6 @@ export function isDate(test: unknown): test is Date | string | number {
     return !Number.isNaN(new Date(test).getTime());
   } else return false;
 }
-
-/*
- * Email Validation
- */
 
 /**
  * Returns `true` if the input is a plausible email address.
@@ -180,12 +156,17 @@ export function isEmail(test: unknown): test is string {
   const domain = match[2] ?? "";
   if (!local.length || !domain.length) return false;
   if (local.length > 64 || domain.length > 253) return false;
-  return domain.split(".").every((part) => part.length > 0);
+  const parts = domain.split(".");
+  return parts.length >= 2 && parts.every((part) => part.length > 0);
 }
 
 /*
  * Environment Validations: Core Globals
  */
+
+/** Returns `true` if running in a Node.js environment. */
+export const isEnvNode =
+  typeof process !== "undefined" && typeof process.versions?.node === "string";
 
 /** Returns `true` if `window` is defined (e.g. browser, jsdom). */
 export const isEnvWindow = typeof window !== "undefined";
@@ -195,10 +176,6 @@ export const isEnvDocument = typeof document !== "undefined";
 
 /** Returns `true` if running in a browser environment (both `window` and `document` are defined). */
 export const isEnvBrowser = isEnvWindow && isEnvDocument;
-
-/** Returns `true` if running in a Node.js environment. */
-export const isEnvNode =
-  typeof process !== "undefined" && typeof process.versions?.node === "string";
 
 /** Returns `true` if running in a Web Worker environment. */
 export const isEnvWorker =
@@ -261,10 +238,6 @@ export function isEnvNotificationGranted(): boolean {
   );
 }
 
-/*
- * Error Validation
- */
-
 /**
  * Returns `true` if the input is an `Error` object.
  * Handles errors across different realms (e.g. iframes, vm contexts)
@@ -283,10 +256,6 @@ export function isError(test: unknown): test is Error {
   );
 }
 
-/*
- * Function Validation
- */
-
 /**
  * Returns `true` if the input is a function.
  * @example
@@ -302,10 +271,6 @@ export function isFunction(
   return typeof test === "function";
 }
 
-/*
- * HTTP Validation
- */
-
 /**
  * Returns `true` if the input is a string beginning with `http://` or `https://`.
  * Does not perform full URL validation — use `isURL` for stricter checks if needed.
@@ -320,10 +285,6 @@ export function isFunction(
 export function isHTTP(test: unknown): test is string {
   return isStringSafeRegex(test) && /^https?:\/\//i.test(test);
 }
-
-/*
- * JSON Validations
- */
 
 /**
  * Returns `true` if the input is a JSON-serializable value.
@@ -366,10 +327,6 @@ export function isJSONString(test: unknown): test is string {
   }
 }
 
-/*
- * JWT Validation
- */
-
 /**
  * Returns `true` if the input is a valid base64url encoded string that can be decoded.
  * Uses the internal non-secure JWT-style decoder — not a real JWT validator.
@@ -382,10 +339,6 @@ export function isJSONString(test: unknown): test is string {
 export function isJWT(test: unknown): test is string {
   return jwt.decode(test) !== undefined;
 }
-
-/*
- * Module Validation
- */
 
 /**
  * Returns `true` if the given module name can be resolved in the current Node.js environment.
@@ -407,10 +360,6 @@ export function isModule(test: unknown): test is string {
   }
 }
 
-/*
- * Number Validations
- */
-
 /**
  * Returns `true` if the input is of type `number`.
  * Note: returns `true` for `NaN` and `Infinity` — use `isNumberValid` for stricter checks.
@@ -423,18 +372,6 @@ export function isModule(test: unknown): test is string {
  */
 export function isNumber(test: unknown): test is number {
   return typeof test === "number";
-}
-
-/**
- * Returns `true` if the input is a finite, non-NaN number.
- * @example
- * isNumberValid(123)       // true
- * isNumberValid(NaN)       // false
- * isNumberValid(Infinity)  // false
- * isNumberValid("123")     // false - string
- */
-export function isNumberValid(test: unknown): test is number {
-  return isNumber(test) && !Number.isNaN(test) && Number.isFinite(test);
 }
 
 /**
@@ -451,6 +388,18 @@ export function isNumberString(test: unknown): test is string {
 }
 
 /**
+ * Returns `true` if the input is a finite, non-NaN number.
+ * @example
+ * isNumberValid(123)       // true
+ * isNumberValid(NaN)       // false
+ * isNumberValid(Infinity)  // false
+ * isNumberValid("123")     // false - string
+ */
+export function isNumberValid(test: unknown): test is number {
+  return isNumber(test) && !Number.isNaN(test) && Number.isFinite(test);
+}
+
+/**
  * Returns `true` if the input is a valid finite number or a string representing one.
  * @example
  * isNumeric(123)      // true
@@ -463,10 +412,6 @@ export function isNumberString(test: unknown): test is string {
 export function isNumeric(test: unknown): test is string | number {
   return isNumberValid(test) || isNumberString(test);
 }
-
-/*
- * Object Validations
- */
 
 /**
  * Returns `true` if the input is a plain object (i.e. created via `{}`, `Object.create(null)`, or `new Object()`).
@@ -502,10 +447,6 @@ export function isObjectNonEmpty(
   return isObject(test) && Object.keys(test).length > 0;
 }
 
-/*
- * Phone Number Validation
- */
-
 /**
  * Returns `true` if the input is a valid phone number in E.164 format.
  * E.164 allows an optional leading `+`, followed by 2–15 digits starting with a non-zero digit.
@@ -520,12 +461,8 @@ export function isObjectNonEmpty(
  * isPhoneNumber(123)             // false - not a string
  */
 export function isPhoneNumber(test: unknown): test is string {
-  return isStringSafeRegex(test) && /^\+?[1-9]\d{1,14}$/.test(test); // E.164 format
+  return isString(test) && /^\+?[1-9]\d{1,14}$/.test(test); // E.164 format
 }
-
-/*
- * Regex Validation
- */
 
 /**
  * Returns `true` if the input is a `RegExp` object.
@@ -541,10 +478,6 @@ export function isRegex(test: unknown): test is RegExp {
     Object.prototype.toString.call(test) === "[object RegExp]"
   );
 }
-
-/*
- * String Validations
- */
 
 /** Returns `true` if the input is a string. */
 export function isString(test: unknown): test is string {
@@ -574,10 +507,6 @@ export function isStringNonEmpty(test: unknown): test is string {
 export function isStringSafeRegex(test: unknown): test is string {
   return isString(test) && safeR(test);
 }
-
-/*
- * URL Validation
- */
 
 /**
  * Returns `true` if the input is a `URL` object.
@@ -609,10 +538,6 @@ export function isURLString(test: unknown): test is string {
   );
 }
 
-/*
- * General Validation
- */
-
 /**
  * Returns `true` if the input is a non-null, non-undefined value.
  * When `testAll` is `true`, applies stricter validation based on the input's type:
@@ -643,5 +568,11 @@ export function isValid(test: unknown, testAll = false): boolean {
 }
 
 // Aliases for backwards compatibility
+export const isHttp = isHTTP;
+export const isJson = isJSON;
+export const isJsonString = isJSONString;
+export const isJwt = isJWT;
 export const isStringOrArray = isArrayOrString;
 export const isStringSafe = isStringSafeRegex;
+export const isUrl = isURL;
+export const isUrlString = isURLString;

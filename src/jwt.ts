@@ -36,5 +36,7 @@ export function decode<T = unknown>(input: unknown): T | undefined {
 }
 
 // Aliases for backwards compatibility
-export const decodeJson = decode;
+export const encodeJSON = encode;
+export const encodeJson = encode;
 export const decodeJSON = decode;
+export const decodeJson = decode;
