@@ -11,11 +11,15 @@ import * as validate from "./validate.js";
  * abbreviationToNumber("1.5m")   // 1500000
  * abbreviationToNumber("2b")     // 2000000000
  * abbreviationToNumber("1.2 T")  // 1200000000000
+ * abbreviationToNumber("1.2 O")  // 1.2
  * abbreviationToNumber("abc")    // undefined
  * abbreviationToNumber(null)     // undefined
+ * abbreviationToNumber(NaN)      // undefined
+ * abbreviationToNumber(Infinity) // undefined
+ * abbreviationToNumber(0)        // 0
  */
 export function abbreviationToNumber(input: unknown): number | undefined {
-  if (validate.isNumber(input)) {
+  if (validate.isNumberValid(input)) {
     return input;
   }
 
@@ -26,13 +30,13 @@ export function abbreviationToNumber(input: unknown): number | undefined {
   if (validate.isString(input)) {
     const clean = input.replace(/\s+|,/g, "");
 
-    if (!clean) return undefined;
+    if (!clean) return;
 
     const suffix = clean[clean.length - 1].toLowerCase();
 
     const power = { k: 3, m: 6, b: 9, t: 12 }[suffix];
 
-    if (power === undefined) {
+    if (!power) {
       return parseFloat(clean) || undefined;
     }
 

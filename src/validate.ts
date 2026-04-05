@@ -1,5 +1,4 @@
 import safeR from "safe-regex";
-import * as jwt from "./jwt.js";
 
 /** Returns `true` if the input is an array. */
 export const isArray = Array.isArray;
@@ -328,16 +327,34 @@ export function isJSONString(test: unknown): test is string {
 }
 
 /**
- * Returns `true` if the input is a valid base64url encoded string that can be decoded.
- * Uses the internal non-secure JWT-style decoder — not a real JWT validator.
+ * Returns `true` if the input is a structurally valid JWT.
+ * Validates the three-segment structure and that the header and payload are valid base64url-encoded JSON.
+ * Does NOT verify the signature — never use this for authentication purposes.
  * @example
- * isJWT(jwt.encode({ id: 1 })) // true  - valid encoded payload
- * isJWT("not-a-jwt")           // false - not a valid encoded string
- * isJWT("")                    // false - empty string
- * isJWT(123)                   // false - not a string
+ * isJWT("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.signature") // true
+ * isJWT("not-a-jwt")  // false - wrong structure
+ * isJWT("")           // false - empty string
+ * isJWT(123)          // false - not a string
  */
 export function isJWT(test: unknown): test is string {
-  return jwt.decode(test) !== undefined;
+  if (!isStringNonEmpty(test)) return false;
+  const parts = test.split(".");
+  if (parts.length !== 3) return false;
+  const [header, payload] = parts;
+  return isBase64URLDecodableJSON(header) && isBase64URLDecodableJSON(payload);
+}
+
+function isBase64URLDecodableJSON(input: string): boolean {
+  try {
+    if (typeof Buffer !== "undefined") {
+      JSON.parse(Buffer.from(input, "base64url").toString("utf-8"));
+    } else {
+      JSON.parse(atob(input.replace(/-/g, "+").replace(/_/g, "/")));
+    }
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**
