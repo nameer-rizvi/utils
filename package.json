@@ -54,6 +54,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/he": "^1",
+    "@types/lodash.clonedeep": "^4",
     "@types/node": "^25.5.2",
     "@types/safe-regex": "^1.1.6",
     "eslint": "^10.2.0",
@@ -63,6 +65,9 @@
   },
   "dependencies": {
     "change-case": "^5.4.4",
-    "safe-regex": "^2.1.1"
+    "he": "^1.2.0",
+    "lodash.clonedeep": "^4.5.0",
+    "safe-regex": "^2.1.1",
+    "string-strip-html": "^13.5.3"
   }
 }
