@@ -2,16 +2,24 @@ import * as base64 from "./base64.js";
 
 const EMPTY = base64.encodeJson("");
 
+function toBase64Url(input: string): string {
+  return input.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function fromBase64Url(input: string): string {
+  return input.replace(/-/g, "+").replace(/_/g, "/");
+}
+
 /**
  * Encodes a value into a non-secure JWT-style token with an empty header and no signature.
  * Returns `undefined` if the payload cannot be serialized.
  * @example
- * encode({ id: 1, name: "John" })  // "e30=.eyJpZCI6MSwibmFtZSI6IkpvaG4ifQ==."
+ * encode({ id: 1, name: "John" })  // "IiI=.eyJpZCI6MSwibmFtZSI6IkpvaG4ifQ==."
  * encode(undefined)                // undefined
  */
 export function encode(input: unknown): string | undefined {
   const payload = base64.encodeJson(input);
-  if (payload !== undefined) return `${EMPTY}.${payload}.${EMPTY}`;
+  if (payload !== undefined) return `${EMPTY}.${toBase64Url(payload)}.${EMPTY}`;
 }
 
 /**
@@ -28,7 +36,9 @@ export function encode(input: unknown): string | undefined {
 export function decode<T = unknown>(input: unknown): T | undefined {
   if (typeof input === "string") {
     const parts = input.split(".");
-    if (parts.length === 3) return base64.decodeJson<T>(parts[1]);
+    if (parts.length === 3) {
+      return base64.decodeJson<T>(fromBase64Url(parts[1]));
+    }
   }
 }
 

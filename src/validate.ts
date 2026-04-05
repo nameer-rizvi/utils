@@ -274,14 +274,14 @@ export function isFunction(
  * Returns `true` if the input is a string beginning with `http://` or `https://`.
  * Does not perform full URL validation — use `isURL` for stricter checks if needed.
  * @example
- * isHTTP("https://example.com") // true
- * isHTTP("http://example.com")  // true
- * isHTTP("HTTP://example.com")  // true  - case-insensitive
- * isHTTP("ftp://example.com")   // false - wrong protocol
- * isHTTP("example.com")         // false - missing protocol
- * isHTTP(123)                   // false - not a string
+ * isHttp("https://example.com") // true
+ * isHttp("http://example.com")  // true
+ * isHttp("HTTP://example.com")  // true  - case-insensitive
+ * isHttp("ftp://example.com")   // false - wrong protocol
+ * isHttp("example.com")         // false - missing protocol
+ * isHttp(123)                   // false - not a string
  */
-export function isHTTP(test: unknown): test is string {
+export function isHttp(test: unknown): test is string {
   return isStringSafeRegex(test) && /^https?:\/\//i.test(test);
 }
 
@@ -290,13 +290,13 @@ export function isHTTP(test: unknown): test is string {
  * Validates by round-tripping through `JSON.stringify` and `JSON.parse`.
  * Note: `undefined`, functions, and symbols are not JSON-serializable.
  * @example
- * isJSON({ a: 1 })        // true
- * isJSON([1, 2, 3])       // true
- * isJSON("hello")         // true
- * isJSON(undefined)       // false - not serializable
- * isJSON(() => {})        // false - functions are not serializable
+ * isJson({ a: 1 })        // true
+ * isJson([1, 2, 3])       // true
+ * isJson("hello")         // true
+ * isJson(undefined)       // false - not serializable
+ * isJson(() => {})        // false - functions are not serializable
  */
-export function isJSON(test: unknown): test is unknown {
+export function isJson(test: unknown): test is unknown {
   if (test === undefined) return false;
   try {
     JSON.parse(JSON.stringify(test));
@@ -309,14 +309,14 @@ export function isJSON(test: unknown): test is unknown {
 /**
  * Returns `true` if the input is a string containing valid JSON.
  * @example
- * isJSONString('{"a":1}')     // true
- * isJSONString('[1, 2, 3]')   // true
- * isJSONString('"hello"')     // true  - quoted strings are valid JSON
- * isJSONString('undefined')   // false - not valid JSON
- * isJSONString("{a: 1}")      // false - unquoted keys are not valid JSON
- * isJSONString(123)           // false - not a string
+ * isJsonString('{"a":1}')     // true
+ * isJsonString('[1, 2, 3]')   // true
+ * isJsonString('"hello"')     // true  - quoted strings are valid JSON
+ * isJsonString('undefined')   // false - not valid JSON
+ * isJsonString("{a: 1}")      // false - unquoted keys are not valid JSON
+ * isJsonString(123)           // false - not a string
  */
-export function isJSONString(test: unknown): test is string {
+export function isJsonString(test: unknown): test is string {
   if (!isString(test)) return false;
   try {
     JSON.parse(test);
@@ -331,20 +331,20 @@ export function isJSONString(test: unknown): test is string {
  * Validates the three-segment structure and that the header and payload are valid base64url-encoded JSON.
  * Does NOT verify the signature — never use this for authentication purposes.
  * @example
- * isJWT("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.signature") // true
- * isJWT("not-a-jwt")  // false - wrong structure
- * isJWT("")           // false - empty string
- * isJWT(123)          // false - not a string
+ * isJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.signature") // true
+ * isJwt("not-a-jwt")  // false - wrong structure
+ * isJwt("")           // false - empty string
+ * isJwt(123)          // false - not a string
  */
-export function isJWT(test: unknown): test is string {
+export function isJwt(test: unknown): test is string {
   if (!isStringNonEmpty(test)) return false;
   const parts = test.split(".");
   if (parts.length !== 3) return false;
   const [header, payload] = parts;
-  return isBase64URLDecodableJSON(header) && isBase64URLDecodableJSON(payload);
+  return isBase64URLDecodableJson(header) && isBase64URLDecodableJson(payload);
 }
 
-function isBase64URLDecodableJSON(input: string): boolean {
+function isBase64URLDecodableJson(input: string): boolean {
   try {
     if (typeof Buffer !== "undefined") {
       JSON.parse(Buffer.from(input, "base64url").toString("utf-8"));
@@ -528,11 +528,11 @@ export function isStringSafeRegex(test: unknown): test is string {
 /**
  * Returns `true` if the input is a `URL` object.
  * @example
- * isURL(new URL("https://example.com")) // true
- * isURL("https://example.com")          // false - string, not a URL object
- * isURL(null)                           // false
+ * isUrl(new URL("https://example.com")) // true
+ * isUrl("https://example.com")          // false - string, not a URL object
+ * isUrl(null)                           // false
  */
-export function isURL(test: unknown): test is URL {
+export function isUrl(test: unknown): test is URL {
   return test instanceof URL;
 }
 
@@ -541,14 +541,14 @@ export function isURL(test: unknown): test is URL {
  * Accepts `http://`, `https://`, and protocol-relative URLs, as well as `localhost`.
  * For stricter validation, consider `isHTTP` to require an explicit protocol.
  * @example
- * isURLString("https://example.com")      // true
- * isURLString("http://localhost:3000")    // true
- * isURLString("example.com")              // true  - protocol is optional
- * isURLString("not a url")                // false - spaces
- * isURLString("")                         // false - empty string
- * isURLString(123)                        // false - not a string
+ * isUrlString("https://example.com")      // true
+ * isUrlString("http://localhost:3000")    // true
+ * isUrlString("example.com")              // true  - protocol is optional
+ * isUrlString("not a url")                // false - spaces
+ * isUrlString("")                         // false - empty string
+ * isUrlString(123)                        // false - not a string
  */
-export function isURLString(test: unknown): test is string {
+export function isUrlString(test: unknown): test is string {
   if (!isStringSafeRegex(test)) return false;
   return /^(https?:\/\/)?([^\s.]+\.[^\s]{2,}|localhost[:\d]*)\S*$/i.test(
     test.trim(),
@@ -585,11 +585,11 @@ export function isValid(test: unknown, testAll = false): boolean {
 }
 
 // Aliases for backwards compatibility
-export const isHttp = isHTTP;
-export const isJson = isJSON;
-export const isJsonString = isJSONString;
-export const isJwt = isJWT;
+export const isHTTP = isHttp;
+export const isJSON = isJson;
+export const isJSONString = isJsonString;
+export const isJWT = isJwt;
 export const isStringOrArray = isArrayOrString;
 export const isStringSafe = isStringSafeRegex;
-export const isUrl = isURL;
-export const isUrlString = isURLString;
+export const isURL = isUrl;
+export const isURLString = isUrlString;
