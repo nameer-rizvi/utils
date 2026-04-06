@@ -1,6 +1,6 @@
 import * as validate from "./validate.js";
 
-type ArithmeticOperator = "+" | "-" | "*" | "**" | "/" | "+%" | "-%";
+export type ArithmeticOperator = "+" | "-" | "*" | "**" | "/" | "+%" | "-%";
 
 /**
  * Applies an arithmetic operation to a number using a given value.
