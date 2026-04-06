@@ -10,6 +10,7 @@ export * as clone from "./clone.js";
 export * as compare from "./compare.js";
 export * from "./copyText.js";
 export * from "./countLabel.js";
+export * as date from "./date.js";
 export * from "./generalCount.js";
 export * as jwt from "./jwt.js";
 export * as math from "./math.js";
