@@ -21,7 +21,7 @@ export function shallow<T>(input: T): T {
 /**
  * Creates a deep clone of the input value by recursively cloning nested arrays and plain objects.
  * Primitives, functions, and special types (`Date`, `RegExp`, `Map`, `Set`) are copied by reference.
- * For full deep cloning of special types and circular references, use `cloneDeep` (lodash) instead.
+ * For full deep cloning of special types and circular references, use `deep` (lodash) instead.
  * @example
  * lite({ a: 1, b: { c: 2 } })   // { a: 1, b: { c: 2 } }  - b is a new object
  * lite([1, [2, 3], 4])          // [1, [2, 3], 4]         - nested array is cloned

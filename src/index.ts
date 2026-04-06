@@ -7,6 +7,7 @@ export * as changecase from "change-case"; // https://www.npmjs.com/package/chan
 export * from "./changeIndex.js";
 export * from "./cleanString.js";
 export * as clone from "./clone.js";
+export * as compare from "./compare.js";
 export * as jwt from "./jwt.js";
 export * as math from "./math.js";
 export * from "./trim.js";

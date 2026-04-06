@@ -1,3 +1,31 @@
 import * as utils from "../dist/esm/index.js";
 
-console.log(".mjs -->", utils);
+console.log(
+  ".mjs -->",
+  // utils.compare.euclidean([0, 0], [3, 4]),
+  // utils.compare.euclidean([0, 0, 0], [1, 1, 1]),
+  // utils.compare.euclidean([1, 2, 3], [1, 2, 3]),
+  // utils.compare.euclidean([1, 2], [1, 2, 3]),
+  // utils.compare.euclidean([], []),
+  // utils.compare.euclidean("a", [1, 2]),
+  // utils.compare.manhattan([0, 0], [3, 4]),
+  // utils.compare.manhattan([0, 0, 0], [1, 1, 1]),
+  // utils.compare.manhattan([1, 2, 3], [1, 2, 3]),
+  // utils.compare.manhattan([1, 2], [1, 2, 3]),
+  // utils.compare.manhattan([], []),
+  // utils.compare.manhattan("a", [1, 2]),
+  // utils.compare.cosine([1, 2, 3], [1, 2, 3]),
+  // utils.compare.cosine([1, 0], [0, 1]),
+  // utils.compare.cosine([1, 2, 3], [3, 2, 1]),
+  // utils.compare.cosine([1, 2], [-1, -2]),
+  // utils.compare.cosine([1, 2], [2, 4]),
+  // utils.compare.cosine([1, 2], [1, 2, 3]),
+  // utils.compare.cosine([], []),
+  utils.compare.pearson([1, 2, 3], [1, 2, 3]),
+  utils.compare.pearson([1, 2, 3], [3, 2, 1]),
+  utils.compare.pearson([1, 2, 3], [2, 4, 6]),
+  utils.compare.pearson([1, 2, 3], [1, 3, 2]),
+  utils.compare.pearson([1, 1, 1], [1, 2, 3]),
+  utils.compare.pearson([1, 2], [1, 2, 3]),
+  utils.compare.pearson([], []),
+);
