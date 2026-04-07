@@ -5,15 +5,23 @@ import * as validate from "./validate.js";
 /** Represents a value that can be resolved to a `Date` object. */
 export type DateType = Date | string | number;
 
-// Caches for Intl.DateTimeFormat instances keyed by locale
-
+/** Cache for Intl.DateTimeFormat instance keyed by locale for long weekday names. */
 export const WEEKDAY_LONG: Record<string, Intl.DateTimeFormat> = {};
 
+/** Cache for Intl.DateTimeFormat instance keyed by locale for short weekday names. */
 export const WEEKDAY_SHORT: Record<string, Intl.DateTimeFormat> = {};
 
+/** Cache for Intl.DateTimeFormat instance keyed by locale for long month names. */
 export const MONTH_LONG: Record<string, Intl.DateTimeFormat> = {};
 
+/** Cache for Intl.DateTimeFormat instance keyed by locale for short month names. */
 export const MONTH_SHORT: Record<string, Intl.DateTimeFormat> = {};
+
+/** Cache for Intl.DateTimeFormat instance keyed by locale for relative format. */
+export const RELATIVE_FORMAT: Record<string, Intl.RelativeTimeFormat> = {};
+
+/** Represents number of milliseconds in a day. */
+export const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
 /* -------------------- Date Arrays / Accessors -------------------- */
 
@@ -350,57 +358,91 @@ export function toMysqlDatetime(input?: DateType): string {
 
 /* -------------------- Relative / Friendly Time ------------------- */
 
-// export function getDaysTill(input1?: DateType, input2?: DateType): number {
-//   const target = resolve(input1);
-//   const from = resolve(input2);
-//   const diff = (target.getTime() - from.getTime()) / (1000 * 60 * 60 * 24);
-//   return Math.ceil(diff);
-// }
+/**
+ * Calculates the number of days from one date to another.
+ * Defaults both dates to the current date if not provided.
+ * Returns a positive number if `target` is in the future, negative if in the past.
+ * @example
+ * getDaysTill("2024-12-31", "2024-01-01")  // 365  - days from Jan 1 to Dec 31
+ * getDaysTill("2024-01-01", "2024-12-31")  // -365 - negative, target is in the past
+ * getDaysTill("2024-01-01")                // days from today to Jan 1, 2024
+ * getDaysTill()                            // 0    - same date
+ */
+export function getDaysTill(input1?: DateType, input2?: DateType): number {
+  const target = resolve(input1);
+  const from = resolve(input2);
+  return Math.ceil((target.getTime() - from.getTime()) / MS_PER_DAY);
+}
 
-// export function getDaysDiff(input1?: DateType, input2?: DateType): number {
-//   return Math.abs(getDaysTill(input1, input2));
-// }
+/**
+ * Calculates the absolute number of days between two dates.
+ * Unlike `getDaysTill`, order does not matter — the result is always non-negative.
+ * Defaults both dates to the current date if not provided.
+ * @example
+ * getDaysDiff("2024-12-31", "2024-01-01")  // 365 - same as getDaysTill
+ * getDaysDiff("2024-01-01", "2024-12-31")  // 365 - order doesn't matter
+ * getDaysDiff("2024-01-01")                // days between today and Jan 1, 2024
+ * getDaysDiff()                            // 0   - same date
+ */
+export function getDaysDiff(input1?: DateType, input2?: DateType): number {
+  return Math.abs(getDaysTill(input1, input2));
+}
 
-// export function getRelative(
-//   input?: DateType,
-//   asShort?: boolean,
-//   locale?: string,
-// ): string {
-//   const d = resolve(input);
-//   const now = new Date();
-//   const diffMs = d.getTime() - now.getTime();
-//   const diffSec = Math.round(diffMs / 1000);
-//   const diffMin = Math.round(diffSec / 60);
-//   const diffHour = Math.round(diffMin / 60);
-//   const diffDay = Math.round(diffHour / 24);
-//   const diffWeek = Math.round(diffDay / 7);
-//   const diffMonth =
-//     (d.getFullYear() - now.getFullYear()) * 12 +
-//     (d.getMonth() - now.getMonth());
-//   const diffYear = d.getFullYear() - now.getFullYear();
-//   const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
-//   if (Math.abs(diffSec) < 15) {
-//     return "now";
-//   } else if (Math.abs(diffSec) < 60) {
-//     return asShort ? `${diffSec}s` : rtf.format(diffSec, "second");
-//   } else if (Math.abs(diffMin) < 60) {
-//     return asShort ? `${diffMin}m` : rtf.format(diffMin, "minute");
-//   } else if (Math.abs(diffHour) < 24) {
-//     return asShort ? `${diffHour}h` : rtf.format(diffHour, "hour");
-//   } else if (diffDay === 0) {
-//     return asShort ? "today" : "today";
-//   } else if (diffDay === 1) {
-//     return asShort ? "tomorrow" : "tomorrow";
-//   } else if (diffDay === -1) {
-//     return asShort ? "yesterday" : "yesterday";
-//   } else if (Math.abs(diffDay) < 7) {
-//     return asShort ? `${diffDay}d` : rtf.format(diffDay, "day");
-//   } else if (Math.abs(diffWeek) < 5) {
-//     return asShort ? `${diffWeek}w` : rtf.format(diffWeek, "week");
-//   } else if (Math.abs(diffMonth) < 12) {
-//     return asShort ? `${diffMonth}M` : rtf.format(diffMonth, "month");
-//   } else return asShort ? `${diffYear}y` : rtf.format(diffYear, "year");
-// }
+/**
+ * Returns a human-readable relative time string for a given date.
+ * Defaults to the current date if no input is provided.
+ * @example
+ * getRelative(addSeconds(10))             // "in 10 seconds"
+ * getRelative(addMinutes(-30))            // "30 minutes ago"
+ * getRelative(addHours(2))                // "in 2 hours"
+ * getRelative(addDays(1))                 // "tomorrow"
+ * getRelative(addDays(-1))                // "yesterday"
+ * getRelative(addDays(3))                 // "in 3 days"
+ * getRelative(addDays(3), true)           // "3d"
+ * getRelative(addMonths(2))               // "in 2 months"
+ * getRelative(addYears(1))                // "next year"
+ * getRelative(addYears(1), true, "fr-FR") // "1a"
+ */
+export function getRelative(
+  input?: DateType,
+  asShort?: boolean,
+  locale = "en-US",
+): string {
+  const d = resolve(input);
+  const now = new Date();
+  const diffMs = d.getTime() - now.getTime();
+  const diffSec = Math.round(diffMs / 1000);
+  const diffMin = Math.round(diffSec / 60);
+  const diffHour = Math.round(diffMin / 60);
+  const diffDay = Math.round(diffHour / 24);
+  const diffWeek = Math.round(diffDay / 7);
+  const diffMonth =
+    (d.getFullYear() - now.getFullYear()) * 12 +
+    (d.getMonth() - now.getMonth());
+  const diffYear = d.getFullYear() - now.getFullYear();
+  const rtf = (RELATIVE_FORMAT[locale] ??= new Intl.RelativeTimeFormat(locale, {
+    numeric: "auto",
+  }));
+  if (Math.abs(diffSec) < 15) {
+    return "now";
+  } else if (Math.abs(diffSec) < 60) {
+    return asShort ? `${diffSec}s` : rtf.format(diffSec, "second");
+  } else if (Math.abs(diffMin) < 60) {
+    return asShort ? `${diffMin}m` : rtf.format(diffMin, "minute");
+  } else if (Math.abs(diffHour) < 24) {
+    return asShort ? `${diffHour}h` : rtf.format(diffHour, "hour");
+  } else if (diffDay === 1) {
+    return "tomorrow";
+  } else if (diffDay === -1) {
+    return "yesterday";
+  } else if (Math.abs(diffDay) < 7) {
+    return asShort ? `${diffDay}d` : rtf.format(diffDay, "day");
+  } else if (Math.abs(diffWeek) < 5) {
+    return asShort ? `${diffWeek}w` : rtf.format(diffWeek, "week");
+  } else if (Math.abs(diffMonth) < 12) {
+    return asShort ? `${diffMonth}M` : rtf.format(diffMonth, "month");
+  } else return asShort ? `${diffYear}y` : rtf.format(diffYear, "year");
+}
 
 /* --------------------------- Validators -------------------------- */
 
@@ -505,29 +547,53 @@ export function toMysqlDatetime(input?: DateType): string {
 //   return day >= 1 && day <= 5;
 // }
 
-// export function isWeekdayName(input?: unknown, locale?: string): boolean {
-//   if (validate.isStringNonEmpty(input)) {
-//     const v = input.toLowerCase();
-//     const long = getWeekdays(locale);
-//     const short = getWeekdaysShort(locale);
-//     for (let i = 0; i < long.length; i++)
-//       if (long[i].toLowerCase() === v || short[i].toLowerCase() === v)
-//         return true;
-//   }
-//   return false;
-// }
+/**
+ * Returns `true` if the input is a valid full or abbreviated weekday name for the given locale.
+ * Case-insensitive.
+ * @example
+ * isWeekdayName("Monday")             // true  - full weekday name
+ * isWeekdayName("Mon")                // true  - abbreviated weekday name
+ * isWeekdayName("mon")                // true  - case-insensitive
+ * isWeekdayName("lundi", "fr-FR")     // true  - French weekday name
+ * isWeekdayName("invalid")            // false
+ * isWeekdayName("")                   // false
+ * isWeekdayName(123)                  // false - not a string
+ */
+export function isWeekdayName(input?: unknown, locale?: string): boolean {
+  if (validate.isStringNonEmpty(input)) {
+    const v = input.toLowerCase();
+    const long = getWeekdays(locale);
+    const short = getWeekdaysShort(locale);
+    for (let i = 0; i < long.length; i++)
+      if (long[i].toLowerCase() === v || short[i].toLowerCase() === v)
+        return true;
+  }
+  return false;
+}
 
-// export function isMonthName(input?: unknown, locale?: string): boolean {
-//   if (validate.isStringNonEmpty(input)) {
-//     const v = input.toLowerCase();
-//     const long = getMonths(locale);
-//     const short = getMonthsShort(locale);
-//     for (let i = 0; i < long.length; i++)
-//       if (long[i].toLowerCase() === v || short[i].toLowerCase() === v)
-//         return true;
-//   }
-//   return false;
-// }
+/**
+ * Returns `true` if the input is a valid full or abbreviated month name for the given locale.
+ * Case-insensitive.
+ * @example
+ * isMonthName("January")                      // true  - full month name
+ * isMonthName("Jan")                          // true  - abbreviated month name
+ * isMonthName("jan")                          // true  - case-insensitive
+ * isMonthName("janvier", undefined, "fr-FR")  // true  - French month name
+ * isMonthName("invalid")                      // false
+ * isMonthName("")                             // false
+ * isMonthName(123)                            // false - not a string
+ */
+export function isMonthName(input?: unknown, locale?: string): boolean {
+  if (!validate.isStringNonEmpty(input)) return false;
+  const v = input.toLowerCase();
+  const long = getMonths(locale);
+  const short = getMonthsShort(locale);
+  for (let i = 0; i < long.length; i++) {
+    if (long[i].toLowerCase() === v || short[i].toLowerCase() === v)
+      return true;
+  }
+  return false;
+}
 
 /* --------------------- Internals / Utilities --------------------- */
 

@@ -3,8 +3,11 @@ const utils = require("../dist/cjs/index.js");
 console.log(
   ".cjs -->",
   //
-  utils.date.toMysqlDatetime("2024-01-01T12:30:45.000Z"),
-  utils.date.toMysqlDatetime(new Date(2024, 0, 1, 12, 30)),
-  utils.date.toMysqlDatetime(1704067200000),
-  utils.date.toMysqlDatetime(),
+  utils.date.isWeekdayName("Monday"),
+  utils.date.isWeekdayName("Mon"),
+  utils.date.isWeekdayName("mon"),
+  utils.date.isWeekdayName("lundi", "fr-FR"),
+  utils.date.isWeekdayName("invalid"),
+  utils.date.isWeekdayName(""),
+  utils.date.isWeekdayName(123),
 );
