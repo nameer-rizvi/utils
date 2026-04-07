@@ -446,106 +446,255 @@ export function getRelative(
 
 /* --------------------------- Validators -------------------------- */
 
-// export function isDay(
-//   input?: DateType,
-//   option: {
-//     date?: DateType;
-//     addYears?: number;
-//     addMonths?: number;
-//     addDays?: number;
-//   } = {},
-// ): boolean {
-//   const { date, addYears = 0, addMonths = 0, addDays = 0 } = option;
-//   const dateA = resolve(input);
-//   const dateB = resolve(date);
-//   return (
-//     dateA.getFullYear() === dateB.getFullYear() + addYears &&
-//     dateA.getMonth() === dateB.getMonth() + addMonths &&
-//     dateA.getDate() === dateB.getDate() + addDays
-//   );
-// }
+/**
+ * Returns `true` if `input` falls on the same calendar day as `date` (with optional offsets).
+ * Defaults both dates to the current date if not provided.
+ * Offsets are applied to `date` before comparison.
+ * @example
+ * isDay("2024-01-15", { date: "2024-01-15" })              // true  - same day
+ * isDay("2024-01-16", { date: "2024-01-15", addDays: 1 })  // true  - date + 1 day
+ * isDay("2024-02-15", { date: "2024-01-15", addMonths: 1}) // true  - date + 1 month
+ * isDay("2025-01-15", { date: "2024-01-15", addYears: 1 }) // true  - date + 1 year
+ * isDay("2024-01-15", { date: "2024-01-16" })              // false - different days
+ * isDay()                                                  // true  - both default to now
+ */
+export function isDay(
+  input?: DateType,
+  option: {
+    date?: DateType;
+    addYears?: number;
+    addMonths?: number;
+    addDays?: number;
+  } = {},
+): boolean {
+  const {
+    date,
+    addYears: years = 0,
+    addMonths: months = 0,
+    addDays: days = 0,
+  } = option;
+  const dateA = resolve(input);
+  const dateB = resolve(date);
+  return (
+    dateA.getFullYear() === dateB.getFullYear() + years &&
+    dateA.getMonth() === dateB.getMonth() + months &&
+    dateA.getDate() === dateB.getDate() + days
+  );
+}
 
-// export function isPast(input1?: DateType, input2?: DateType): boolean {
-//   return resolve(input1) < resolve(input2);
-// }
+/**
+ * Returns `true` if `input1` is before `input2`.
+ * Defaults both dates to the current date if not provided.
+ * @example
+ * isPast("2024-01-01", "2024-06-01")  // true  - January is before June
+ * isPast("2024-06-01", "2024-01-01")  // false
+ * isPast("2024-01-01", "2024-01-01")  // false - same date
+ * isPast("2024-01-01")                // true/false - compares to now
+ */
+export function isPast(input1?: DateType, input2?: DateType): boolean {
+  return resolve(input1) < resolve(input2);
+}
 
-// export function isPresent(input1?: DateType, input2?: DateType): boolean {
-//   return resolve(input1) === resolve(input2);
-// }
+/**
+ * Returns `true` if `input1` and `input2` represent the exact same point in time.
+ * Defaults both dates to the current date if not provided.
+ * @example
+ * isPresent("2024-01-01", "2024-01-01")  // true  - same date
+ * isPresent("2024-01-01", "2024-06-01")  // false - different dates
+ * isPresent()                            // true  - both default to now
+ */
+export function isPresent(input1?: DateType, input2?: DateType): boolean {
+  return resolve(input1).getTime() === resolve(input2).getTime();
+}
 
-// export function isFuture(input1?: DateType, input2?: DateType): boolean {
-//   return resolve(input1) > resolve(input2);
-// }
+/**
+ * Returns `true` if `input1` is after `input2`.
+ * Defaults both dates to the current date if not provided.
+ * @example
+ * isFuture("2024-06-01", "2024-01-01")  // true  - June is after January
+ * isFuture("2024-01-01", "2024-06-01")  // false
+ * isFuture("2024-01-01", "2024-01-01")  // false - same date
+ * isFuture("2024-12-31")                // true/false - compares to now
+ */
+export function isFuture(input1?: DateType, input2?: DateType): boolean {
+  return resolve(input1) > resolve(input2);
+}
 
-// export function isDayPast(input1?: DateType, input2?: DateType): boolean {
-//   const d1 = resolve(input1);
-//   const d2 = resolve(input2);
-//   return (
-//     isMonthPast(d1, d2) ||
-//     (isMonthPresent(d1, d2) && d1.getDate() < d2.getDate())
-//   );
-// }
+/**
+ * Returns `true` if the day of `input1` is before the day of `input2`.
+ * Takes year and month into account — an earlier month or year is always considered a past day.
+ * Defaults both dates to the current date if not provided.
+ * @example
+ * isDayPast("2024-01-01", "2024-01-15")  // true  - 1st is before 15th
+ * isDayPast("2024-01-01", "2024-06-01")  // true  - earlier month
+ * isDayPast("2023-12-31", "2024-01-01")  // true  - earlier year
+ * isDayPast("2024-01-15", "2024-01-15")  // false - same day
+ * isDayPast("2024-01-15", "2024-01-01")  // false - 15th is after 1st
+ */
+export function isDayPast(input1?: DateType, input2?: DateType): boolean {
+  const d1 = resolve(input1);
+  const d2 = resolve(input2);
+  return (
+    isMonthPast(d1, d2) ||
+    (isMonthPresent(d1, d2) && d1.getDate() < d2.getDate())
+  );
+}
 
-// export function isDayPresent(input1?: DateType, input2?: DateType): boolean {
-//   const d1 = resolve(input1);
-//   const d2 = resolve(input2);
-//   return isMonthPresent(d1, d2) && d1.getDate() === d2.getDate();
-// }
+/**
+ * Returns `true` if the day of `input1` is the same as the day of `input2`.
+ * Year, month, and day must all match.
+ * Defaults both dates to the current date if not provided.
+ * @example
+ * isDayPresent("2024-01-15", "2024-01-15")  // true  - same day
+ * isDayPresent("2024-01-15", "2024-01-01")  // false - different days
+ * isDayPresent("2024-01-15", "2024-06-15")  // false - different months
+ * isDayPresent("2024-01-15")                // true/false - compares to today
+ */
+export function isDayPresent(input1?: DateType, input2?: DateType): boolean {
+  const d1 = resolve(input1);
+  const d2 = resolve(input2);
+  return isMonthPresent(d1, d2) && d1.getDate() === d2.getDate();
+}
 
-// export function isDayFuture(input1?: DateType, input2?: DateType): boolean {
-//   const d1 = resolve(input1);
-//   const d2 = resolve(input2);
-//   return (
-//     isMonthFuture(d1, d2) ||
-//     (isMonthPresent(d1, d2) && d1.getDate() > d2.getDate())
-//   );
-// }
+/**
+ * Returns `true` if the day of `input1` is after the day of `input2`.
+ * Takes year and month into account — a later month or year is always considered a future day.
+ * Defaults both dates to the current date if not provided.
+ * @example
+ * isDayFuture("2024-01-15", "2024-01-01")  // true  - 15th is after 1st
+ * isDayFuture("2024-06-01", "2024-01-15")  // true  - later month
+ * isDayFuture("2025-01-01", "2024-12-31")  // true  - later year
+ * isDayFuture("2024-01-15", "2024-01-15")  // false - same day
+ * isDayFuture("2024-01-01", "2024-01-15")  // false - 1st is before 15th
+ */
+export function isDayFuture(input1?: DateType, input2?: DateType): boolean {
+  const d1 = resolve(input1);
+  const d2 = resolve(input2);
+  return (
+    isMonthFuture(d1, d2) ||
+    (isMonthPresent(d1, d2) && d1.getDate() > d2.getDate())
+  );
+}
 
-// export function isMonthPast(input1?: DateType, input2?: DateType): boolean {
-//   const d1 = resolve(input1);
-//   const d2 = resolve(input2);
-//   return (
-//     isYearPast(d1, d2) ||
-//     (isYearPresent(d1, d2) && d1.getMonth() < d2.getMonth())
-//   );
-// }
+/**
+ * Returns `true` if the month of `input1` is before the month of `input2`.
+ * Takes year into account — an earlier year is always considered a past month.
+ * Defaults both dates to the current date if not provided.
+ * @example
+ * isMonthPast("2024-01-01", "2024-06-01")  // true  - January is before June
+ * isMonthPast("2023-06-01", "2024-01-01")  // true  - earlier year
+ * isMonthPast("2024-06-01", "2024-06-15")  // false - same month
+ * isMonthPast("2024-06-01", "2024-01-01")  // false - June is after January
+ */
+export function isMonthPast(input1?: DateType, input2?: DateType): boolean {
+  const d1 = resolve(input1);
+  const d2 = resolve(input2);
+  return (
+    isYearPast(d1, d2) ||
+    (isYearPresent(d1, d2) && d1.getMonth() < d2.getMonth())
+  );
+}
 
-// export function isMonthPresent(input1?: DateType, input2?: DateType): boolean {
-//   const d1 = resolve(input1);
-//   const d2 = resolve(input2);
-//   return isYearPresent(d1, d2) && d1.getMonth() === d2.getMonth();
-// }
+/**
+ * Returns `true` if the month of `input1` is the same as the month of `input2`.
+ * Both year and month must match.
+ * Defaults both dates to the current date if not provided.
+ * @example
+ * isMonthPresent("2024-06-01", "2024-06-15")  // true  - same month and year
+ * isMonthPresent("2024-06-01", "2024-01-01")  // false - different months
+ * isMonthPresent("2023-06-01", "2024-06-01")  // false - different years
+ * isMonthPresent("2024-06-01")                // true/false - compares to current month
+ */
+export function isMonthPresent(input1?: DateType, input2?: DateType): boolean {
+  const d1 = resolve(input1);
+  const d2 = resolve(input2);
+  return isYearPresent(d1, d2) && d1.getMonth() === d2.getMonth();
+}
 
-// export function isMonthFuture(input1?: DateType, input2?: DateType): boolean {
-//   const d1 = resolve(input1);
-//   const d2 = resolve(input2);
-//   return (
-//     isYearFuture(d1, d2) ||
-//     (isYearPresent(d1, d2) && d1.getMonth() > d2.getMonth())
-//   );
-// }
+/**
+ * Returns `true` if the month of `input1` is after the month of `input2`.
+ * Takes year into account — a later year is always considered a future month.
+ * Defaults both dates to the current date if not provided.
+ * @example
+ * isMonthFuture("2024-06-01", "2024-01-01")  // true  - June is after January
+ * isMonthFuture("2025-01-01", "2024-06-01")  // true  - later year
+ * isMonthFuture("2024-06-01", "2024-06-15")  // false - same month
+ * isMonthFuture("2024-01-01", "2024-06-01")  // false - January is before June
+ */
+export function isMonthFuture(input1?: DateType, input2?: DateType): boolean {
+  const d1 = resolve(input1);
+  const d2 = resolve(input2);
+  return (
+    isYearFuture(d1, d2) ||
+    (isYearPresent(d1, d2) && d1.getMonth() > d2.getMonth())
+  );
+}
 
-// export function isYearPast(input1?: DateType, input2?: DateType): boolean {
-//   return resolve(input1).getFullYear() < resolve(input2).getFullYear();
-// }
+/**
+ * Returns `true` if the year of `input1` is before the year of `input2`.
+ * Defaults both dates to the current date if not provided.
+ * @example
+ * isYearPast("2023-01-01", "2024-01-01")  // true  - 2023 is before 2024
+ * isYearPast("2024-01-01", "2024-06-01")  // false - same year
+ * isYearPast("2025-01-01", "2024-01-01")  // false - 2025 is after 2024
+ */
+export function isYearPast(input1?: DateType, input2?: DateType): boolean {
+  return resolve(input1).getFullYear() < resolve(input2).getFullYear();
+}
 
-// export function isYearPresent(input1?: DateType, input2?: DateType): boolean {
-//   return resolve(input1).getFullYear() === resolve(input2).getFullYear();
-// }
+/**
+ * Returns `true` if the year of `input1` is the same as the year of `input2`.
+ * Defaults both dates to the current date if not provided.
+ * @example
+ * isYearPresent("2024-01-01", "2024-06-01")  // true       - same year
+ * isYearPresent("2023-01-01", "2024-01-01")  // false      - different years
+ * isYearPresent("2024-01-01")                // true/false - compares to current year
+ */
+export function isYearPresent(input1?: DateType, input2?: DateType): boolean {
+  return resolve(input1).getFullYear() === resolve(input2).getFullYear();
+}
 
-// export function isYearFuture(input1?: DateType, input2?: DateType): boolean {
-//   return resolve(input1).getFullYear() > resolve(input2).getFullYear();
-// }
+/**
+ * Returns `true` if the year of `input1` is after the year of `input2`.
+ * Defaults both dates to the current date if not provided.
+ * @example
+ * isYearFuture("2025-01-01", "2024-01-01")  // true  - 2025 is after 2024
+ * isYearFuture("2024-01-01", "2024-06-01")  // false - same year
+ * isYearFuture("2023-01-01", "2024-01-01")  // false - 2023 is before 2024
+ */
+export function isYearFuture(input1?: DateType, input2?: DateType): boolean {
+  return resolve(input1).getFullYear() > resolve(input2).getFullYear();
+}
 
-// export function isWeekend(input?: DateType): boolean {
-//   const day = resolve(input).getDay();
-//   return day === 0 || day === 6;
-// }
+/**
+ * Returns `true` if the given date falls on a weekend (Saturday or Sunday).
+ * Defaults to the current date if no input is provided.
+ * @example
+ * isWeekend("2024-01-06")  // true  - Saturday
+ * isWeekend("2024-01-07")  // true  - Sunday
+ * isWeekend("2024-01-01")  // false - Monday
+ * isWeekend("2024-01-05")  // false - Friday
+ * isWeekend()              // true/false depending on current day
+ */
+export function isWeekend(input?: DateType): boolean {
+  const day = resolve(input).getDay();
+  return day === 0 || day === 6;
+}
 
-// export function isWeekday(input?: DateType): boolean {
-//   const day = resolve(input).getDay();
-//   return day >= 1 && day <= 5;
-// }
+/**
+ * Returns `true` if the given date falls on a weekday (Monday–Friday).
+ * Defaults to the current date if no input is provided.
+ * @example
+ * isWeekday("2024-01-01")  // true  - Monday
+ * isWeekday("2024-01-05")  // true  - Friday
+ * isWeekday("2024-01-06")  // false - Saturday
+ * isWeekday("2024-01-07")  // false - Sunday
+ * isWeekday()              // true/false depending on current day
+ */
+export function isWeekday(input?: DateType): boolean {
+  const day = resolve(input).getDay();
+  return day > 0 && day < 6;
+}
 
 /**
  * Returns `true` if the input is a valid full or abbreviated weekday name for the given locale.

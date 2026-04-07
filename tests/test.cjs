@@ -3,11 +3,10 @@ const utils = require("../dist/cjs/index.js");
 console.log(
   ".cjs -->",
   //
-  utils.date.isWeekdayName("Monday"),
-  utils.date.isWeekdayName("Mon"),
-  utils.date.isWeekdayName("mon"),
-  utils.date.isWeekdayName("lundi", "fr-FR"),
-  utils.date.isWeekdayName("invalid"),
-  utils.date.isWeekdayName(""),
-  utils.date.isWeekdayName(123),
+  utils.date.isDay("2024-01-15", { date: "2024-01-15" }),
+  utils.date.isDay("2024-01-16", { date: "2024-01-15", addDays: 1 }),
+  utils.date.isDay("2024-02-15", { date: "2024-01-15", addMonths: 1 }),
+  utils.date.isDay("2025-01-15", { date: "2024-01-15", addYears: 1 }),
+  utils.date.isDay("2024-01-15", { date: "2024-01-16" }),
+  utils.date.isDay(),
 );
