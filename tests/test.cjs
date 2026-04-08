@@ -1,12 +1,13 @@
 const utils = require("../dist/cjs/index.js");
 
+const obj = { price: 100 };
+utils.keyChange(obj, "price", 100, 150);
+const obj2 = { revenue: 200 };
+utils.keyChange(obj2, "revenue", 200, 100);
+
 console.log(
   ".cjs -->",
   //
-  utils.date.isDay("2024-01-15", { date: "2024-01-15" }),
-  utils.date.isDay("2024-01-16", { date: "2024-01-15", addDays: 1 }),
-  utils.date.isDay("2024-02-15", { date: "2024-01-15", addMonths: 1 }),
-  utils.date.isDay("2025-01-15", { date: "2024-01-15", addYears: 1 }),
-  utils.date.isDay("2024-01-15", { date: "2024-01-16" }),
-  utils.date.isDay(),
+  obj,
+  obj2,
 );
