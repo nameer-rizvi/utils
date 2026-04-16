@@ -20,8 +20,26 @@ export const MONTH_SHORT: Record<string, Intl.DateTimeFormat> = {};
 /** Cache for Intl.DateTimeFormat instance keyed by locale for relative format. */
 export const RELATIVE_FORMAT: Record<string, Intl.RelativeTimeFormat> = {};
 
+/** Represents number of milliseconds in a second. */
+export const MS_PER_SECOND = 1000;
+
+/** Represents number of milliseconds in a minute. */
+export const MS_PER_MINUTE = MS_PER_SECOND * 60;
+
+/** Represents number of milliseconds in an hour. */
+export const MS_PER_HOUR = MS_PER_MINUTE * 60;
+
 /** Represents number of milliseconds in a day. */
-export const MS_PER_DAY = 1000 * 60 * 60 * 24;
+export const MS_PER_DAY = MS_PER_HOUR * 24;
+
+/** Represents number of milliseconds in a week. */
+export const MS_PER_WEEK = MS_PER_DAY * 7;
+
+/** Represents number of milliseconds in a month (average). */
+export const MS_PER_MONTH = MS_PER_DAY * 30.44;
+
+/** Represents number of milliseconds in a year (average). */
+export const MS_PER_YEAR = MS_PER_DAY * 365.25;
 
 /* -------------------- Date Arrays / Accessors -------------------- */
 

@@ -49,7 +49,7 @@
     "build": "yarn clean && yarn lint && yarn build:cjs && yarn build:esm && node scripts/postbuild.mjs && echo '✅ Build complete! CJS and ESM outputs ready in dist/'",
     "test:cjs": "node tests/test.cjs",
     "test:esm": "node tests/test.mjs",
-    "test": "yarn test:cjs && yarn test:esm",
+    "test": "yarn build && yarn test:cjs && yarn test:esm",
     "prepublishOnly": "yarn build"
   },
   "devDependencies": {
