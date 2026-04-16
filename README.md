@@ -1,4 +1,4 @@
-# @nameer-rizvi/utils
+# @nameer/utils
 
 Library of utility functions for use in personal projects.
 
@@ -7,9 +7,9 @@ Library of utility functions for use in personal projects.
 If you're using this as a published package, install it via:
 
 ```bash
-npm install @nameer-rizvi/utils
+npm install @nameer/utils
 # or
-yarn add @nameer-rizvi/utils
+yarn add @nameer/utils
 ```
 
 ### Usage
@@ -19,13 +19,13 @@ This package supports both CommonJS and ES Modules out of the box.
 **ESM**
 
 ```js
-import * as utils from "@nameer-rizvi/utils";
+import * as utils from "@nameer/utils";
 ```
 
 **CommonJS**
 
 ```js
-const utils = require("@nameer-rizvi/utils");
+const utils = require("@nameer/utils");
 ```
 
 ## For Template Users
@@ -34,7 +34,7 @@ If you're using this as a starting point for your own package, clone and set it 
 
 ```bash
 # Clone project
-git clone https://github.com/nameer-rizvi/utils.git
+git clone https://github.com/nameer/utils.git
 
 # Change into project
 cd utils

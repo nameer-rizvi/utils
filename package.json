@@ -1,5 +1,5 @@
 {
-  "name": "@nameer-rizvi/utils",
+  "name": "@nameer/utils",
   "packageManager": "yarn@4.13.0",
   "version": "0.1.0",
   "description": "Library of utility functions for use in personal projects.",
@@ -38,6 +38,9 @@
         "default": "dist/cjs/index.js"
       }
     }
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "update": "yarn && node scripts/updateDeps.js",
