@@ -7,17 +7,17 @@ import { cleanString } from "./cleanString.js";
  * Normalizes unicode, expands common symbols, strips punctuation, and encodes the result.
  * Returns `""` if the input is not a string or `maxlength` is invalid.
  * @example
- * slug("Hello, World!")           // "hello_world"
- * slug("Hello, World!", "-")      // "hello-world"       - custom delimiter
- * slug("100% off & more")         // "100_percent_off_and_more"
- * slug("user@example.com")        // "user_at_example_com"
- * slug("a=b")                     // "a_is_b"
- * slug("Hello, World!", "_", 5)   // "hello"             - maxlength applied
- * slug(123)                       // ""                  - not a string
+ * slug("Hello, World!")           // "hello-world"
+ * slug("Hello, World!", "_")      // "hello_world"               - custom delimiter
+ * slug("100% off & more")         // "100-percent-off-and-more"
+ * slug("user@example.com")        // "user-at-example-com"
+ * slug("a=b")                     // "a-is-b"
+ * slug("Hello, World!", "_", 5)   // "hello"                     - maxlength applied
+ * slug(123)                       // ""                          - not a string
  */
 export function slug(
   input: unknown,
-  delimiter = "_",
+  delimiter = "-",
   maxlength = 2000,
 ): string {
   if (!validate.isString(input) || maxlength <= 0) return "";
