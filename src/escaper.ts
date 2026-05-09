@@ -19,7 +19,7 @@ interface RegExpConstructorWithEscape extends RegExpConstructor {
  */
 export function escaper(input: unknown): string | undefined {
   if (validate.isString(input)) {
-    if ("escape" in RegExp && typeof RegExp.escape !== "function") {
+    if ("escape" in RegExp && typeof (RegExp as RegExpConstructorWithEscape).escape === "function") {
       return (RegExp as RegExpConstructorWithEscape).escape(input);
     } else {
       // Fallback: manually escape all special regex characters
