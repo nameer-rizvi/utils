@@ -12,6 +12,6 @@ import * as validate from "./validate.js";
  */
 export function trim(input: unknown, delimiter = " "): string | undefined {
   if (validate.isString(input)) {
-    return input.trim().replace(/\s+/g, delimiter);
+    return input.replace(/\p{Cf}/gu, "").trim().replace(/\s+/g, delimiter);
   }
 }
