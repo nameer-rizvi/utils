@@ -34,7 +34,7 @@ If you're using this as a starting point for your own package, clone and set it 
 
 ```bash
 # Clone project
-git clone https://github.com/nameer/utils.git
+git clone https://github.com/nameer-rizvi/utils.git
 
 # Change into project
 cd utils

@@ -272,7 +272,7 @@ export function isFunction(
 
 /**
  * Returns `true` if the input is a string beginning with `http://` or `https://`.
- * Does not perform full URL validation — use `isURL` for stricter checks if needed.
+ * Does not perform full URL validation — use `isUrl` for stricter checks if needed.
  * @example
  * isHttp("https://example.com") // true
  * isHttp("http://example.com")  // true
@@ -539,7 +539,7 @@ export function isUrl(test: unknown): test is URL {
 /**
  * Returns `true` if the input is a string representing a valid URL.
  * Accepts `http://`, `https://`, and protocol-relative URLs, as well as `localhost`.
- * For stricter validation, consider `isHTTP` to require an explicit protocol.
+ * For stricter validation, consider `isHttp` to require an explicit protocol.
  * @example
  * isUrlString("https://example.com")      // true
  * isUrlString("http://localhost:3000")    // true
@@ -550,9 +550,8 @@ export function isUrl(test: unknown): test is URL {
  */
 export function isUrlString(test: unknown): test is string {
   if (!isStringSafeRegex(test)) return false;
-  return /^(https?:\/\/)?([^\s.]+\.[^\s]{2,}|localhost[:\d]*)\S*$/i.test(
-    test.trim(),
-  );
+  const r = /^(https?:\/\/)?([^\s.]+\.[^\s]{2,}|localhost(:\d+)?)\S*$/i;
+  return r.test(test.trim());
 }
 
 /**
